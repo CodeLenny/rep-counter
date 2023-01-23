@@ -2,6 +2,7 @@ import {
   As,
   Box,
   Center,
+  chakra,
   Flex,
   Icon,
   LinkBox,
@@ -10,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import React, { ReactNode } from "react";
 import { RiFlightTakeoffLine, RiHome2Fill } from "react-icons/ri";
-import { Link as RouterLink } from "react-router-dom";
+import { Link, Link as RouterLink } from "react-router-dom";
 
 const NavButton: React.FC<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,12 +36,43 @@ const NavButton: React.FC<{
 };
 
 export interface DashboardLayoutProps {
+  title?: string;
+  icon?: As<ReactNode>;
+  iconHref?: string;
   children?: ReactNode;
 }
 
-export function DashboardLayout({ children }: DashboardLayoutProps) {
+export function DashboardLayout({
+  icon,
+  iconHref,
+  title,
+  children,
+}: DashboardLayoutProps) {
   return (
     <Flex direction="column" h="100vh">
+      <chakra.header
+        bg="white"
+        borderBottom="2px solid"
+        borderBottomColor="gray.300"
+        borderTop="6px solid"
+        borderTopColor="purple.400"
+        w="full"
+        overflowY="hidden"
+      >
+        <chakra.div h="4.5rem" mx="auto" maxW="1200px">
+          <Flex w="full" h="full" px="6" align="center" justify="space-between">
+            <Flex align="center">
+              {icon && iconHref && (
+                <Link to={iconHref}>
+                  <Icon as={icon} />
+                </Link>
+              )}
+              {icon && !iconHref && <Icon as={icon} />}
+              {title}
+            </Flex>
+          </Flex>
+        </chakra.div>
+      </chakra.header>
       <Box flex="1" overflowY="auto">
         {children}
       </Box>

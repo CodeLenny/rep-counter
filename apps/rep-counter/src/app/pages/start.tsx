@@ -22,7 +22,7 @@ export function QuickStartPage() {
   const sets = usePouch<Set>("sets");
 
   return (
-    <DashboardLayout>
+    <DashboardLayout title="Quick Start">
       <Container maxW="container.md" pt={28}>
         <Formik<Omit<Set, "_id" | "kind" | "rep">>
           initialValues={{

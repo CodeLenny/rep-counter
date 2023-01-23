@@ -4,7 +4,7 @@ import { DashboardLayout } from "../layout/DashboardLayout";
 
 export function LandingPage() {
   return (
-    <DashboardLayout>
+    <DashboardLayout title="Rep Counter">
       <Container maxW="container.md">
         <Link to="/start/">Use quick-start</Link>
       </Container>
