@@ -1,13 +1,17 @@
-import { Box, Button, Center, Container, Flex, Heading, Stack, Text } from "@chakra-ui/react";
-import { useCallback, useMemo, useState } from "react";
+import { Box, Button, Center, Container, Flex, Heading, Progress, Stack, Text } from "@chakra-ui/react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDoc, usePouch } from "use-pouchdb";
 import { Set, SetRep } from "../../dto/Set";
 
 export function SetPage() {
   const sets = usePouch<Set>("sets");
+  const [storingSet, setStoringSet] = useState(false);
   const { setId } = useParams();
   const [undoConfirm, setUndoConfirm] = useState(false);
+
+  const [repStart, setRepStart] = useState<number | false>(false);
+  const [repTime, setRepTime] = useState("");
 
   const { doc, loading, error } = useDoc<Set>(setId ?? "", {
     db: "sets",
@@ -15,6 +19,13 @@ export function SetPage() {
 
   // TODO: Load a default, either from {@link doc} or from local storage or other persistant storage.
   const [trackEachRep, setTrackEachRep] = useState(true);
+
+  const duration = useMemo(() => {
+    if(!doc || !doc.duration) {
+      return false;
+    }
+    return doc.duration * 1000;
+  }, [doc]);
 
   const setIndex = useMemo(() => {
     if(!doc) {
@@ -69,8 +80,8 @@ export function SetPage() {
     return [undefined, lastRep];
   }, [doc]);
 
-  const storeRep = useCallback(() => {
-    if(!doc || !currentRep) {
+  const storeRep = useCallback(async () => {
+    if(!doc || !currentRep || storingSet) {
       return;
     }
 
@@ -78,18 +89,39 @@ export function SetPage() {
       set: currentRep.set,
       side: currentRep.side,
       rep: currentRep.rep,
-      started: Date.now(),
+      started: repStart ? repStart : Date.now(),
       complete: true,
     };
 
-    sets.put({
+    setStoringSet(true);
+    await sets.put({
       ...doc,
       rep: [
-        ...(doc.rep ?? []),
+        ...(doc.rep ?? []).filter(r => !(r.set === rep.set && r.side === rep.side && r.rep === rep.rep)),
         rep,
       ],
     });
-  }, [currentRep, doc, sets]);
+    setStoringSet(false);
+  }, [currentRep, doc, repStart, sets, storingSet]);
+
+  useEffect(() => {
+    if(!repStart || !duration) {
+      return;
+    }
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - repStart;
+      if(elapsed > duration) {
+        setRepStart(false);
+        clearInterval(interval);
+        storeRep();
+        return;
+      }
+      setRepTime(`${Math.round((duration - elapsed) / 100) / 10}`);
+    }, 50);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [duration, repStart, storeRep]);
 
   if(error) {
     return (
@@ -154,6 +186,60 @@ export function SetPage() {
             Rep {currentRep.rep + 1} / {doc.reps}
           </Heading>
 
+          {trackEachRep && (doc.hold) && (
+            <Box>
+              <Center>
+                <Text
+                  width="4em"
+                  fontSize="2xl"
+                >
+                  { repStart === false ? doc.duration : (`${repTime}`.includes(".") ? repTime : `${repTime}.0`) }
+                </Text>
+              </Center>
+              <Progress
+                colorScheme="purple"
+                value={repStart === false ? 0 : 0}
+                my={2}
+              />
+              {
+                repStart === false && (
+                  <Center my={2}>
+                    <Button
+                      colorScheme="purple"
+                      size="lg"
+                      onClick={async () => {
+                        const started = Date.now();
+                        const rep: SetRep = {
+                          set: currentRep.set,
+                          side: currentRep.side,
+                          rep: currentRep.rep,
+                          started,
+                          complete: false,
+                        };
+                        if(storingSet) {
+                          return;
+                        }
+                        setStoringSet(true);
+                        await sets.put({
+                          ...doc,
+                          rep: [
+                            ...(doc.rep ?? []).filter(r => !(r.set === rep.set && r.side === rep.side && r.rep === rep.rep)),
+                            rep,
+                          ],
+                        });
+                        setStoringSet(false);
+                        setRepTime(`${doc.duration}`);
+                        setRepStart(started);
+                      }}
+                    >
+                      Start
+                    </Button>
+                  </Center>
+                )
+              }
+            </Box>
+          )}
+
           {trackEachRep && (!doc.hold) && (
             <Center my={3}>
               <Button
@@ -173,15 +259,20 @@ export function SetPage() {
             colorScheme="orange"
             size="xs"
             variant={undoConfirm ? "solid" : "outline"}
-            onClick={() => {
+            onClick={async () => {
               if(!undoConfirm) {
                 setUndoConfirm(true);
               } else {
                 setUndoConfirm(false);
-                sets.put({
+                if(storingSet) {
+                  return;
+                }
+                setStoringSet(true);
+                await sets.put({
                   ...doc,
                   rep: (doc.rep ?? []).filter(r => !(r.set === lastRep.set && r.side === lastRep.side && r.rep === lastRep.rep)),
                 });
+                setStoringSet(false);
               }
             }}
           >
