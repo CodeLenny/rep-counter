@@ -1,13 +1,39 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import styles from './app.module.css';
-import NxWelcome from './nx-welcome';
+import { ChakraProvider, extendTheme, theme } from '@chakra-ui/react';
+import PouchDB from "pouchdb-browser";
+import { useMemo } from 'react';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { Provider } from "use-pouchdb";
+import { LandingPage } from './pages';
+import { SetPage } from './pages/set/set-id';
+import { QuickStartPage } from './pages/start';
+
+const appTheme = extendTheme({}, theme);
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <LandingPage />,
+  },
+  {
+    path: "/start/",
+    element: <QuickStartPage />,
+  },
+  {
+    path: "/set/:setId/",
+    element: <SetPage />,
+  },
+]);
 
 export function App() {
+  const sets = useMemo(() => new PouchDB("sets"), []);
+
   return (
-    <>
-      <NxWelcome title="rep-counter" />
-      <div />
-    </>
+    <Provider default="sets" databases={{ sets }}>
+      <ChakraProvider theme={appTheme}>
+        <RouterProvider router={router} />
+      </ChakraProvider>
+    </Provider>
   );
 }
 

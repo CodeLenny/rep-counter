@@ -19,7 +19,6 @@
           "apps/rep-counter/src/favicon.ico",
           "apps/rep-counter/src/assets"
         ],
-        "styles": ["apps/rep-counter/src/styles.css"],
         "scripts": [],
         "webpackConfig": "apps/rep-counter/webpack.config.js"
       },
