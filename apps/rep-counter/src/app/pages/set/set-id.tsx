@@ -251,6 +251,37 @@ export function SetPage() {
               </Button>
             </Center>
           )}
+
+          {!trackEachRep && !doc.hold && (
+            <Center my={3}>
+              <Button
+                colorScheme="purple"
+                size="lg"
+                onClick={async () => {
+                  if(storingSet) {
+                    return;
+                  }
+                  setStoringSet(true);
+                  await sets.put({
+                    ...doc,
+                    rep: [
+                      ...(doc.rep ?? []).filter(r => !(r.set === currentRep.set && r.side === currentRep.side)),
+                      ...repIndex.map<SetRep>(rep => ({
+                        set: currentRep.set,
+                        side: currentRep.side,
+                        rep,
+                        started: Date.now(),
+                        complete: true,
+                      })),
+                    ],
+                  });
+                  setStoringSet(false);
+                }}
+              >
+                Record all {doc.reps} reps
+              </Button>
+            </Center>
+          )}
         </Box>
       )}
       { lastRep && (
@@ -283,6 +314,16 @@ export function SetPage() {
               Cancel
             </Button>
           )}
+        </Box>
+      )}
+      { !doc.hold && (
+        <Box my={2}>
+          <Button
+            size="xs"
+            onClick={() => setTrackEachRep(!trackEachRep)}
+          >
+            { trackEachRep ? "Record entire sets at once" : "Track each rep individually" }
+          </Button>
         </Box>
       )}
     </Container>
