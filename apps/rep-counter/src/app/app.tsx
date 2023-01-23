@@ -2,7 +2,7 @@
 import { ChakraProvider, extendTheme, theme } from '@chakra-ui/react';
 import PouchDB from "pouchdb-browser";
 import { useMemo } from 'react';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createHashRouter, RouterProvider } from 'react-router-dom';
 import { Provider } from "use-pouchdb";
 import { LandingPage } from './pages';
 import { SetPage } from './pages/set/set-id';
@@ -10,7 +10,7 @@ import { QuickStartPage } from './pages/start';
 
 const appTheme = extendTheme({}, theme);
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: "/",
     element: <LandingPage />,

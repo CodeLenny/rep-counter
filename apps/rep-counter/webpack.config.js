@@ -5,5 +5,12 @@ const { withReact } = require('@nrwl/react');
 module.exports = composePlugins(withNx(), withReact(), (config) => {
   // Update the webpack config as needed here.
   // e.g. `config.plugins.push(new MyPlugin())`
+  if(!config.resolve) {
+    config.resolve = {};
+  }
+  if(!config.resolve.fallback) {
+    config.resolve.fallback = {};
+  }
+  config.resolve.fallback["util"] = false;
   return config;
 });
