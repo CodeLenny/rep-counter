@@ -22,6 +22,7 @@ export function SetPage() {
 
   const [repStart, setRepStart] = useState<number | false>(false);
   const [repTime, setRepTime] = useState("");
+  const [repProgress, setRepProgress] = useState(0);
 
   const { doc, loading, error } = useDoc<Set>(setId ?? "", {
     db: "sets",
@@ -135,6 +136,7 @@ export function SetPage() {
         return;
       }
       setRepTime(`${Math.round((duration - elapsed) / 100) / 10}`);
+      setRepProgress(100 * (elapsed / duration));
     }, 50);
     return () => {
       clearInterval(interval);
@@ -221,7 +223,7 @@ export function SetPage() {
               </Center>
               <Progress
                 colorScheme="purple"
-                value={repStart === false ? 0 : 0}
+                value={repStart === false ? 0 : repProgress}
                 my={2}
               />
               {repStart === false && (
@@ -257,6 +259,7 @@ export function SetPage() {
                         ],
                       });
                       setStoringSet(false);
+                      setRepProgress(0);
                       setRepTime(`${doc.duration}`);
                       setRepStart(started);
                     }}
