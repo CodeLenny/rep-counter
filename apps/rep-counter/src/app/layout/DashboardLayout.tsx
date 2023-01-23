@@ -1,4 +1,13 @@
-import { As, Box, Center, Flex, Icon, LinkBox, LinkOverlay, Stack } from "@chakra-ui/react";
+import {
+  As,
+  Box,
+  Center,
+  Flex,
+  Icon,
+  LinkBox,
+  LinkOverlay,
+  Stack,
+} from "@chakra-ui/react";
 import React, { ReactNode } from "react";
 import { RiFlightTakeoffLine, RiHome2Fill } from "react-icons/ri";
 import { Link as RouterLink } from "react-router-dom";
@@ -17,13 +26,13 @@ const NavButton: React.FC<{
         </Center>
         <Center>
           <LinkOverlay as={RouterLink} to={to}>
-            { text }
+            {text}
           </LinkOverlay>
         </Center>
       </Stack>
     </LinkBox>
-  )
-}
+  );
+};
 
 export interface DashboardLayoutProps {
   children?: ReactNode;
@@ -33,20 +42,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <Flex direction="column" h="100vh">
       <Box flex="1" overflowY="auto">
-        { children }
+        {children}
       </Box>
       <Flex direction="row">
-        <NavButton
-          to="/"
-          text="Home"
-          icon={RiHome2Fill}
-        />
-        <NavButton
-          to="/start/"
-          text="Quick Start"
-          icon={RiFlightTakeoffLine}
-        />
+        <NavButton to="/" text="Home" icon={RiHome2Fill} />
+        <NavButton to="/start/" text="Quick Start" icon={RiFlightTakeoffLine} />
       </Flex>
     </Flex>
-  )
+  );
 }

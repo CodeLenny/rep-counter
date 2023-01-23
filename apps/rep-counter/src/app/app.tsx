@@ -1,12 +1,12 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { ChakraProvider, extendTheme, theme } from '@chakra-ui/react';
+import { ChakraProvider, extendTheme, theme } from "@chakra-ui/react";
 import PouchDB from "pouchdb-browser";
-import { useMemo } from 'react';
-import { createHashRouter, RouterProvider } from 'react-router-dom';
+import { useMemo } from "react";
+import { createHashRouter, RouterProvider } from "react-router-dom";
 import { Provider } from "use-pouchdb";
-import { LandingPage } from './pages';
-import { SetPage } from './pages/set/set-id';
-import { QuickStartPage } from './pages/start';
+import { LandingPage } from "./pages";
+import { SetPage } from "./pages/set/set-id";
+import { QuickStartPage } from "./pages/start";
 
 const appTheme = extendTheme({}, theme);
 
