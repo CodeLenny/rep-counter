@@ -10,7 +10,11 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import React, { ReactNode } from "react";
-import { RiFlightTakeoffLine, RiHome2Fill } from "react-icons/ri";
+import {
+  RiBookMarkLine,
+  RiFlightTakeoffLine,
+  RiHome2Fill,
+} from "react-icons/ri";
 import { Link, Link as RouterLink } from "react-router-dom";
 
 const NavButton: React.FC<{
@@ -78,6 +82,7 @@ export function DashboardLayout({
       </Box>
       <Flex direction="row">
         <NavButton to="/" text="Home" icon={RiHome2Fill} />
+        <NavButton to="/exercises/" text="Exercises" icon={RiBookMarkLine} />
         <NavButton to="/start/" text="Quick Start" icon={RiFlightTakeoffLine} />
       </Flex>
     </Flex>
